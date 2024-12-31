@@ -1,6 +1,9 @@
 import 'package:english_words/english_words.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:numberpicker/numberpicker.dart';
+import 'dart:async';
 
 void main() {
   runApp(MyApp());
@@ -19,50 +22,172 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 62, 198, 247)),
         ),
-        home: MyHomePage(),
+        //sets the starting page
+        home: MyHomePageState(),
       ),
     );
   }
 }
 
+//for when you change something and you need to notify other variables, methods, etc.
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
-  var button = 'Start';
-  var state = true; //when true it should be showing start
-
-  void click() {
-    if(state == true){
-      button = 'Stop';
-    }
-    else {
-      button = 'Start';
-    }
-    state = !state;
-    notifyListeners();
-  }
   void getNext() {
     current = WordPair.random();
     notifyListeners();
   }
 }
 
-class MyHomePage extends StatelessWidget {
+//To turn a stateless widget stateful
+class MyHomePageState extends StatefulWidget {
+  const MyHomePageState({super.key});
+
+  @override
+  State<MyHomePageState> createState() => _MyHomePageStateState();
+}
+
+//main page where you set the time
+class _MyHomePageStateState extends State<MyHomePageState> {
+  int _currentWalkValue = 2;
+  int _currentRunValue = 2;
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Select how much time to run, and how much time to walk:',
+            style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 189, 5, 5),), 
+            textAlign: TextAlign.center,
+            ),
+//Sized Box adds whitespace
+            SizedBox(height: 30),
+
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Walk:',
+                style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+//The number Picking Wheel
+                  NumberPicker(
+                    value: _currentWalkValue,
+                    minValue: 1,
+                    maxValue: 60,
+                    onChanged: (value) =>setState(() =>_currentWalkValue = value),
+                  ),
+                ]),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Run:',
+                style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                  NumberPicker(
+                    value: _currentRunValue,
+                    minValue: 1,
+                    maxValue: 60,
+                    onChanged: (value) =>setState(() =>_currentRunValue = value),
+                  ),
+                ])
+              ],
+            ),
+            
+            SizedBox(height: 30,),
+            ElevatedButton(
+              onPressed: () {
+                appState.getNext();
+                Navigator.push(context, CupertinoPageRoute(builder: (context) => RunningPageState(_currentWalkValue, _currentRunValue)));
+              },
+              child: Text('Start'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class RunningPageState extends StatefulWidget {
+  final int walking ;
+  final int running ;
+  const RunningPageState(this.walking, this.running, {super.key});
+
+  @override
+  State<RunningPageState> createState() => _RunningPageStateState();
+}
+
+class _RunningPageStateState extends State<RunningPageState> {
+  
+  Timer? _timer;
+  bool done = false;
+  bool set = false;
+  late int remainingTime;
+  late int SetTime;
+  late int walking;
+  late int running;
+
+//TODO: Timer is not working properly; The count down is too fast, and also make it able to be restart after going to first screen
+
+  void startTimer(){
+  const oneSec = Duration(seconds: 10);
+  _timer = Timer.periodic(oneSec, (Timer timer){
+    if(!done){
+      if (remainingTime <= 0) {
+          setState(() {
+            timer.cancel();
+            if(SetTime == running){
+              SetTime = walking;
+              remainingTime = walking;
+            }
+            else{
+              SetTime = running;
+              remainingTime = running;
+            }
+            startTimer();
+          });
+        } else {
+          setState(() {
+            remainingTime--;
+            print(remainingTime);
+          });
+        }
+    } else{
+      timer.cancel();
+    }
+  });
+}
+
+@override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    walking = widget.walking;
+    running = widget.running;
+    if(!set){
+      SetTime = running;
+      remainingTime = running;
+      set = true;
+    }
+    startTimer();
+    var appState = context.watch<MyAppState>();
     var pair = appState.current;
-    var buttonState = appState.button;
 
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Select how much time to run, and how much time to walk:',
-            style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
-
-            SizedBox(height: 10),
-
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -71,6 +196,7 @@ class MyHomePage extends StatelessWidget {
                   children: [
                     Text('Minutes:',
                 style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
+                //A widget that I made for displaying things
                   BigCard(pair: pair),
                 ]),
                 Column(
@@ -83,13 +209,15 @@ class MyHomePage extends StatelessWidget {
               ],
             ),
             
-            SizedBox(height: 10,),
+            SizedBox(height: 30,),
             ElevatedButton(
               onPressed: () {
                 appState.getNext();
-                appState.click();
+                Navigator.pop(context);
+                done = true;
+                //_timer.dispose();
               },
-              child: Text(buttonState),
+              child: Text('Stop'),
             ),
           ],
         ),
