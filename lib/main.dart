@@ -1,4 +1,3 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,11 +32,7 @@ class MyApp extends StatelessWidget {
 
 //for when you change something and you need to notify other variables, methods, etc.
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-  }
+  
 }
 
 //To turn a stateless widget stateful
@@ -58,8 +53,6 @@ class _MyHomePageStateState extends State<MyHomePageState> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
       body: Container(
         width: double.maxFinite,
@@ -194,7 +187,7 @@ class _MyHomePageStateState extends State<MyHomePageState> {
                 SizedBox(height: 30,),
                 ElevatedButton(
                   onPressed: () {
-                    appState.getNext();
+                    
                     Navigator.push(context, CupertinoPageRoute(builder: (context) => RunningPageState((_currentWalkValue*60 + _currentWalkMinValue), (_currentRunValue*60 + _currentRunMinValue))));
                   },
                   child: Text('Start'),

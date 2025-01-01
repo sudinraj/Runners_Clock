@@ -1,6 +1,4 @@
-import 'package:run/main.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -91,8 +89,6 @@ class _RunningPageStateState extends State<RunningPageState> {
       startTimer();
     }
     
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
 //using container for background colors and stuff
       body: Container(
@@ -120,7 +116,6 @@ class _RunningPageStateState extends State<RunningPageState> {
                 SizedBox(height: 30,),
                 ElevatedButton(
                   onPressed: () {
-                    appState.getNext();
                     //goes back to the home screen
                     Navigator.pop(context);
                     done = true;
