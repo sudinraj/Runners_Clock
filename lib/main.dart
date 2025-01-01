@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'dart:async';
+import 'package:run/running_page_state.dart';
 
 void main() {
   runApp(MyApp());
@@ -80,10 +80,6 @@ class _MyHomePageStateState extends State<MyHomePageState> {
             ),
 //Sized Box adds whitespace
             SizedBox(height: 30),
-
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -191,9 +187,7 @@ class _MyHomePageStateState extends State<MyHomePageState> {
                     ),
                   ],
                 ),
-                ])
-              ],
-            ),
+                ]),
             
             SizedBox(height: 30,),
             ElevatedButton(
@@ -207,137 +201,5 @@ class _MyHomePageStateState extends State<MyHomePageState> {
         ),
       ),
     );
-  }
-}
-
-
-class RunningPageState extends StatefulWidget {
-  final int walking ;
-  final int running ;
-  const RunningPageState(this.walking, this.running, {super.key});
-
-  @override
-  State<RunningPageState> createState() => _RunningPageStateState();
-}
-
-class _RunningPageStateState extends State<RunningPageState> {
-  
-  Timer? _timer;
-  String activity = 'Run';
-  bool done = false;
-  bool set = false;
-  late int remainingTime;
-  late int setTime;
-  late int walking;
-  late int running;
-
-//Timer Starts with the run time, then it starts a countdown for the walk timer, then it loops that until stopped.
-//TODO: Make noise when timer runs out
-  void startTimer(){
-  const oneSec = Duration(seconds: 1);
-  _timer = Timer.periodic(oneSec, (timer){
-    if(!done){
-  //when the timer is 0, it checks if it was the running timer or the walking timer, then starts the next timer
-      if (remainingTime <= 0) {
-          setState(() {
-            timer.cancel();
-            if(setTime == running){
-              setTime = walking;
-              remainingTime = walking;
-              activity = 'Walk';
-            }
-            else{
-              setTime = running;
-              remainingTime = running;
-              activity = 'Run';
-            }
-            startTimer();
-          });
-        } else {
-          setState(() {
-            remainingTime--;
-          });
-        }
-    } else{
-      timer.cancel();
-    }
-  });
-}
-
-@override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    //setting the value of each variable
-    walking = widget.walking;
-    running = widget.running;
-    if(!set){
-      setTime = running;
-      remainingTime = running;
-      set = true;
-      startTimer();
-    }
-    
-    var appState = context.watch<MyAppState>();
-
-    return Scaffold(
-//using container for background colors and stuff
-      body: Container(
-//sets the width and height to be the size of the screen
-        width: double.maxFinite,
-        height: double.maxFinite,
-        decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [const Color.fromARGB(255, 202, 201, 201),Colors.black],
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(activity,
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-            Text('Seconds:',
-                style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
-                  TimeShow(remainingTime: remainingTime),
-            
-            SizedBox(height: 30,),
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-                Navigator.pop(context);
-                done = true;
-                //_timer.dispose();
-              },
-              child: Text('Stop'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class TimeShow extends StatelessWidget {
-  const TimeShow({
-    super.key,
-    required this.remainingTime,
-  });
-
-  final int remainingTime;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onTertiary,
-    );
-
-    return Text(remainingTime.toString(), style: style);
   }
 }
