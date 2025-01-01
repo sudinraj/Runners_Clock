@@ -1,6 +1,9 @@
 import 'package:english_words/english_words.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:numberpicker/numberpicker.dart';
+import 'package:run/running_page_state.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,111 +17,188 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
+        
         title: 'Runners Clock',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 62, 198, 247)),
         ),
-        home: MyHomePage(),
+        
+        //sets the starting page
+        home: MyHomePageState(),
       ),
     );
   }
 }
 
+//for when you change something and you need to notify other variables, methods, etc.
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
-  var button = 'Start';
-  var state = true; //when true it should be showing start
-
-  void click() {
-    if(state == true){
-      button = 'Stop';
-    }
-    else {
-      button = 'Start';
-    }
-    state = !state;
-    notifyListeners();
-  }
   void getNext() {
     current = WordPair.random();
     notifyListeners();
   }
 }
 
-class MyHomePage extends StatelessWidget {
+//To turn a stateless widget stateful
+class MyHomePageState extends StatefulWidget {
+  const MyHomePageState({super.key});
+
+  @override
+  State<MyHomePageState> createState() => _MyHomePageStateState();
+}
+
+//main page where you set the time
+class _MyHomePageStateState extends State<MyHomePageState> {
+//initial values for the number wheel
+  int _currentWalkValue = 1;
+  int _currentRunValue = 1;
+  int _currentWalkMinValue = 2;
+  int _currentRunMinValue = 2;
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var pair = appState.current;
-    var buttonState = appState.button;
 
     return Scaffold(
-      body: Center(
+      body: Container(
+        width: double.maxFinite,
+        height: double.maxFinite,
+        decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [const Color.fromARGB(255, 202, 201, 201),Colors.black],
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Text('Select how much time to run, and how much time to walk:',
-            style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
-
-            SizedBox(height: 10),
-
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Minutes:',
-                style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
-                  BigCard(pair: pair),
-                ]),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Seconds:',
-                style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
-                  BigCard(pair: pair),
-                ])
-              ],
+            style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 189, 5, 5),), 
+            textAlign: TextAlign.center,
             ),
+//Sized Box adds whitespace
+            SizedBox(height: 30),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Walk:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+//The number Picking Wheel
+                  Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Min',
+                        style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+
+                        NumberPicker(
+                          textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233)),
+                          selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 30),
+                          value: _currentWalkValue,
+                          minValue: 0,
+                          maxValue: 60,
+                          onChanged: (value) =>setState(() =>_currentWalkValue = value),
+                        ),
+                      ],
+                    ),
+
+                    Column(
+                      children: [
+                        SizedBox(height: 25,),
+                        Text(':',
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                      ],
+                    ),
+
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Sec',
+                        style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+
+                        NumberPicker(
+                          textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233)),
+                          selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 30),
+                          value: _currentWalkMinValue,
+                          minValue: 1,
+                          maxValue: 60,
+                          onChanged: (value) =>setState(() =>_currentWalkMinValue = value),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                ]),
+
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Run:',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Min',
+                        style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+
+                        NumberPicker(
+                          textStyle: TextStyle(color: Colors.pink),
+                          selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 30),
+                          value: _currentRunValue,
+                          minValue: 0,
+                          maxValue: 60,
+                          onChanged: (value) =>setState(() =>_currentRunValue = value),
+                        ),
+                      ],
+                    ),
+
+                    Column(
+                      children: [
+                        SizedBox(height: 25,),
+                        Text(':',
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                      ],
+                    ),
+
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+                      children: [
+                        Text('Sec',
+                        style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+
+                        NumberPicker(
+                          textStyle: TextStyle(color: Colors.pink),
+                          selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 30),
+                          value: _currentRunMinValue,
+                          minValue: 1,
+                          maxValue: 60,
+                          onChanged: (value) =>setState(() =>_currentRunMinValue = value),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                ]),
             
-            SizedBox(height: 10,),
+            SizedBox(height: 30,),
             ElevatedButton(
               onPressed: () {
                 appState.getNext();
-                appState.click();
+                Navigator.push(context, CupertinoPageRoute(builder: (context) => RunningPageState((_currentWalkValue*60 + _currentWalkMinValue), (_currentRunValue*60 + _currentRunMinValue))));
               },
-              child: Text(buttonState),
+              child: Text('Start'),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class BigCard extends StatelessWidget {
-  const BigCard({
-    super.key,
-    required this.pair,
-  });
-
-  final WordPair pair;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-
-    return Card(
-      color: theme.colorScheme.primary,
-      
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(pair.asLowerCase, style: style),
       ),
     );
   }
