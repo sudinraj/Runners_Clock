@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:run/_determine_position.dart';
+import 'package:geolocator/geolocator.dart';
 
+
+//TODO: make the location track in the background
 class RunningPageState extends StatefulWidget {
   final int walking ;
   final int running ;
   const RunningPageState(this.walking, this.running, {super.key});
-
   @override
   State<RunningPageState> createState() => _RunningPageStateState();
 }
 
 class _RunningPageStateState extends State<RunningPageState> {
-  
   Timer? _timer;
   String activity = 'Run';
   bool done = false;
@@ -22,6 +24,10 @@ class _RunningPageStateState extends State<RunningPageState> {
   late int walking;
   late int running;
   final player = AudioPlayer();
+
+  double runDistance = 0.0;
+  String location = "Nothing yet";
+  int asdf = 0;
 
 //Timer Starts with the run time, then it starts a countdown for the walk timer, then it loops that until stopped.
   void startTimer(){
@@ -62,6 +68,18 @@ class _RunningPageStateState extends State<RunningPageState> {
           });
         } else {
           setState(() {
+            //gets the position
+            var pos = determinePosition();
+            pos.then((value) {
+              //print(value);
+              location = value.toString();
+            },);
+
+            Geolocator.getPositionStream().listen((Position position){
+              asdf++;
+              print(asdf);
+            });
+
             remainingTime--;
           });
         }
@@ -83,6 +101,7 @@ class _RunningPageStateState extends State<RunningPageState> {
     walking = widget.walking;
     running = widget.running;
     if(!set){
+      setUp();
       setTime = running;
       remainingTime = running;
       set = true;
@@ -122,6 +141,12 @@ class _RunningPageStateState extends State<RunningPageState> {
                   },
                   child: Text('Stop'),
                 ),
+
+                //Temporary only for testing the position getting
+                SizedBox(height: 30,),
+                Text(location,
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+
               ],
             ),
           ),

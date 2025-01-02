@@ -3,8 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:run/running_page_state.dart';
+import 'package:workmanager/workmanager.dart';
+import 'package:run/_determine_position.dart';
+
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+
+  // Register a background task
+  Workmanager().registerPeriodicTask(
+    "uniqueTaskName",
+    "backgroundTask",
+    frequency: Duration(seconds: 1), // Minimum interval for Android
+  );
+
   runApp(MyApp());
 }
 
