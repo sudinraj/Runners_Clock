@@ -72,12 +72,13 @@ class _RunningPageStateState extends State<RunningPageState> {
             var pos = determinePosition();
             pos.then((value) {
               //print(value);
-              location = value.toString();
+              //location = value.toString();
             },);
-
+            
             Geolocator.getPositionStream().listen((Position position){
               asdf++;
-              print(asdf);
+              //print(asdf);
+              location = "$location \n $position";
             });
 
             remainingTime--;
