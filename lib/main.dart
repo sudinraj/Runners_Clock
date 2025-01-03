@@ -6,18 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:run/running_page_state.dart';
-import 'package:workmanager/workmanager.dart';
-import 'package:run/_determine_position.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 
 final FlutterLocalNotificationsPlugin flutterLocalPlugin = FlutterLocalNotificationsPlugin();
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'my_foreground', // id
-    'MY FOREGROUND SERVICE', // title
+    'run_location', // id
+    'Tracking speed', // title
     description:
         'This channel is used for important notifications.', // description
     importance: Importance.low, // importance must be at low or higher level
@@ -63,8 +60,8 @@ Future<void> initializeService() async {
       autoStart: true,
       isForegroundMode: true,
 
-      notificationChannelId: 'my_foreground',
-      initialNotificationTitle: 'AWESOME SERVICE',
+      notificationChannelId: 'run_location',
+      initialNotificationTitle: 'RUNNING SERVICE',
       initialNotificationContent: 'Initializing',
       foregroundServiceNotificationId: 90,
       foregroundServiceTypes: [AndroidForegroundType.location],
@@ -101,8 +98,8 @@ void onStart(ServiceInstance service) async {
           'Awesome ${DateTime.now()}',
           const NotificationDetails(
             android: AndroidNotificationDetails(
-              'my_foreground',
-              'MY FOREGROUND SERVICE',
+              'run_location',
+              'Tracking Speed',
               icon: 'ic_bg_service_small',
               ongoing: true,
             ),
@@ -146,8 +143,9 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        
         title: 'Runners Clock',
+        initialRoute: '/',
+        
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 62, 198, 247)),

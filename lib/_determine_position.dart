@@ -1,18 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:geolocator/geolocator.dart';
-import 'package:workmanager/workmanager.dart';
 
 
 late LocationSettings locationSettings;
 
 void setUp(){
-      Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-      Workmanager().registerPeriodicTask(
-        "uniqueTaskName",
-        "backgroundTask",
-        frequency: Duration(seconds: 1), // Minimum interval for Android
-      );
       if (Platform.isAndroid) {
       locationSettings = AndroidSettings(
           accuracy: LocationAccuracy.high,
@@ -36,15 +29,6 @@ void setUp(){
         showBackgroundLocationIndicator: false,
       );
     }
-  }
-  
-
-void callbackDispatcher() {
-    Workmanager().executeTask((task, inputData) async {
-      print("Task running in the background...");
-      await determinePosition();
-      return Future.value(true);
-    });
   }
   
 
