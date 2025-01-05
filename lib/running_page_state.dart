@@ -23,12 +23,13 @@ class _RunningPageStateState extends State<RunningPageState> {
   late int setTime;
   late int walking;
   late int running;
+
   final player = AudioPlayer();
 
   double latitude = 0;
   double longtitude = 0;
 
-//to calculate speed and distance
+//to calculate average speed and distance
   double runDistance = 0.0;
   String runD = "0.0";
   double walkDistance = 0.0;
@@ -39,7 +40,18 @@ class _RunningPageStateState extends State<RunningPageState> {
   String walkSpeed = "0.0";
   StreamSubscription? getPositionSubscription;
 
-  String location = "Nothing yet";
+//for getting the stats for the run/walk during the countdown
+  double currentRunDistance = 0.0;
+  double currentRunTime = 0.0;
+  String currentRunSpeed = "0.0";
+  String currentRunD = "0.0";
+  double currentWalkDistance = 0.0;
+  double currentWalkTime = 0.0;
+  String currentWalkSpeed = "0.0";
+  String currentWalkD = "0.0";
+
+
+  //String location = "Nothing yet";
 
 //Timer Starts with the run time, then it starts a countdown for the walk timer, then it loops that until stopped.
   void startTimer(){
@@ -71,12 +83,16 @@ class _RunningPageStateState extends State<RunningPageState> {
               setTime = walking;
               remainingTime = walking;
               activity = 'Walk';
+              currentWalkDistance = 0.0;
+              currentWalkTime = 0.0;
             }
             //sets up the run timer if walk timer had ended
             else{
               setTime = running;
               remainingTime = running;
               activity = 'Run';
+              currentRunDistance = 0.0;
+              currentRunTime = 0.0;
             }
             startTimer();
           });
@@ -86,9 +102,11 @@ class _RunningPageStateState extends State<RunningPageState> {
             //keeps track of time
             if(activity == "Run"){
               runTime++;
+              currentRunTime++;
             }
             else{
               walkTime++;
+              currentWalkTime++;
             }
           });
         }
@@ -131,16 +149,24 @@ class _RunningPageStateState extends State<RunningPageState> {
             //runDistance += Geolocator.distanceBetween(double.parse(latitude.toStringAsFixed(6)), double.parse(longtitude.toStringAsFixed(6)), double.parse(position.latitude.toStringAsFixed(6)), double.parse(position.longitude.toStringAsFixed(6)));
             runD = runDistance.toStringAsFixed(2);
             runSpeed = (runDistance/runTime).toStringAsFixed(2);
+
+            currentRunDistance += Geolocator.distanceBetween(latitude, longtitude, position.latitude, position.longitude);
+            currentRunD = currentRunDistance.toStringAsFixed(2);
+            currentRunSpeed = (runDistance/runTime).toStringAsFixed(2);
           }
           else{
             walkDistance += Geolocator.distanceBetween(latitude, longtitude, position.latitude, position.longitude);
             //walkDistance += Geolocator.distanceBetween(double.parse(latitude.toStringAsFixed(6)), double.parse(longtitude.toStringAsFixed(6)), double.parse(position.latitude.toStringAsFixed(6)), double.parse(position.longitude.toStringAsFixed(6)));
             walkD = walkDistance.toStringAsFixed(2);
             walkSpeed = (walkDistance/walkTime).toStringAsFixed(2);
+
+            currentWalkDistance += Geolocator.distanceBetween(latitude, longtitude, position.latitude, position.longitude);
+            currentWalkD = currentRunDistance.toStringAsFixed(2);
+            currentWalkSpeed = (runDistance/runTime).toStringAsFixed(2);
           }
           latitude = position.latitude;
           longtitude = position.longitude;
-          location = "$location \n $longtitude $latitude";
+          //location = "$location \n $longtitude $latitude";
         }
       });
     }
@@ -185,19 +211,80 @@ class _RunningPageStateState extends State<RunningPageState> {
 
                 //Display speed and distance
                 SizedBox(height: 30,),
-                Text("Run distance: $runD Meters",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
+                Container(decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 164, 0, 104),
+                    width: 5.0,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [const Color.fromARGB(255, 13, 243, 255),const Color.fromARGB(255, 191, 255, 15)],
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Run Stats:",
+                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 108, 65, 1),), textAlign: TextAlign.center,),
+                        
+                        Text("Distance(This Cycle): $currentRunD Meters",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
 
-                Text("Run Speed: $runSpeed m/s",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
+                        Text("Avg Speed(This Cycle): $currentRunSpeed m/s",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
+                        
+                        SizedBox(height: 20,),
 
+                        Text("Total Distance: $runD Meters",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
+
+                        Text("Avg Total Run Speed: $runSpeed m/s",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
+                      ]
+                    )
+                  )
+                ),
                 SizedBox(height: 30,),
 
-                Text("Walk distance: $walkD Meters",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
+                Container(decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 98, 59, 255),
+                    width: 5.0,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [const Color.fromARGB(255, 13, 243, 255),const Color.fromARGB(255, 191, 255, 15)],
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Walk Stats:",
+                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 108, 65, 1),), textAlign: TextAlign.center,),
+                        
+                        Text("Distance(This Cycle): $currentWalkD Meters",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
 
-                Text("Walk Speed: $walkSpeed m/s",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
+                        Text("Avg Speed(This Cycle): $currentWalkSpeed m/s",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
+                        
+                        SizedBox(height: 20,),
+
+                        Text("Total Distance: $walkD Meters",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
+
+                        Text("Avg Total Speed: $walkSpeed m/s",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
+                      ]
+                    )
+                  )
+                ),
               ],
             ),
           ),
