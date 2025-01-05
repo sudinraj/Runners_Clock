@@ -119,17 +119,17 @@ class _RunningPageStateState extends State<RunningPageState> {
     }
   });
 }
-void timerCount(){
-  if(activity == "Run"){
-      runTime++;
-      currentRunTime++;
-    }
-    else{
-      walkTime++;
-      currentWalkTime++;
-    }
-  //keeps track of total time in minutes and seconds
-  totalSecond++;
+  void timerCount(){
+    if(activity == "Run"){
+        runTime++;
+        currentRunTime++;
+      }
+      else{
+        walkTime++;
+        currentWalkTime++;
+      }
+    //keeps track of total time in minutes and seconds
+    totalSecond++;
     if(totalSecond >= 60){
       totalMinute++;
       totalSecond = 0;
@@ -223,13 +223,16 @@ void timerCount(){
                   ]
                 ),
                 
+                SizedBox(height: 20,),
+
                 Text(activity,
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-                Text('Seconds:',
+                
+                Text('Seconds Left:',
                     style: TextStyle(fontSize: 20), textAlign: TextAlign.center,),
                       TimeShow(remainingTime: remainingTime),
                 
-                SizedBox(height: 30,),
+                SizedBox(height: 20,),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
