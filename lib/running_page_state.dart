@@ -66,11 +66,13 @@ class _RunningPageStateState extends State<RunningPageState> {
       if (remainingTime <= 0) {
           setState(() {
             timer.cancel();
+            //sets up the walk timer if run timer had ended
             if(activity == "Run"){
               setTime = walking;
               remainingTime = walking;
               activity = 'Walk';
             }
+            //sets up the run timer if walk timer had ended
             else{
               setTime = running;
               remainingTime = running;
@@ -81,6 +83,7 @@ class _RunningPageStateState extends State<RunningPageState> {
         } else {
           setState(() {
             remainingTime--;
+            //keeps track of time
             if(activity == "Run"){
               runTime++;
             }
@@ -175,6 +178,7 @@ class _RunningPageStateState extends State<RunningPageState> {
                     //goes to stats page
                     Navigator.push(context, CupertinoPageRoute(builder: (context) => Stats(runDistance, runD, walkDistance, walkD, runTime, walkTime, runSpeed, walkSpeed)));
                     done = true;
+                    dispose();
                   },
                   child: Text('Stop'),
                 ),

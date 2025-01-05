@@ -19,7 +19,6 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
         'This channel is used for important notifications.', // description
     importance: Importance.low, // importance must be at low or higher level
   );
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
@@ -30,7 +29,6 @@ void main() async {
   //  "backgroundTask",
   //  frequency: Duration(seconds: 1), // Minimum interval for Android
   //);
-
   runApp(MyApp());
 }
 
@@ -115,7 +113,7 @@ void onStart(ServiceInstance service) async {
     }
 
     /// you can see this log in logcat
-    debugPrint('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+    //debugPrint('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
 
     // test using external plugin
     final deviceInfo = DeviceInfoPlugin();
@@ -135,8 +133,36 @@ void onStart(ServiceInstance service) async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
+  @override
+  void initState() {
+    super.initState();
+    //adds an observer that checks if the enviroment has changed
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    //checks if the user has completely closed the app
+    if (state == AppLifecycleState.detached) {
+      //if it is closed, then it kills all processes(including the background process)
+        exit(0);
+    }
+  }
+
+  @override
+  void dispose() {
+    //removes the observer to avoid memory leaks
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

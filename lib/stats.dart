@@ -70,7 +70,8 @@ class Stats extends StatelessWidget{
                     ElevatedButton(
                       onPressed: () {
                         //goes back to the home screen
-                        Navigator.popUntil(context, ModalRoute.withName("/"));
+                        //Navigator.popUntil(context, ModalRoute.withName("/"));
+                        Navigator.popAndPushNamed(context, "/");
                       },
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(100, 50),
