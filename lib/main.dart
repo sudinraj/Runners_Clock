@@ -202,8 +202,8 @@ class _MyHomePageStateState extends State<MyHomePageState> {
 //initial values for the number wheel
   int _currentWalkValue = 1;
   int _currentRunValue = 1;
-  int _currentWalkMinValue = 2;
-  int _currentRunMinValue = 2;
+  int _currentWalkMinValue = 0;
+  int _currentRunMinValue = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +273,7 @@ class _MyHomePageStateState extends State<MyHomePageState> {
                               textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233)),
                               selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 30),
                               value: _currentWalkMinValue,
-                              minValue: 1,
+                              minValue: 0,
                               maxValue: 60,
                               onChanged: (value) =>setState(() =>_currentWalkMinValue = value),
                             ),
@@ -328,7 +328,7 @@ class _MyHomePageStateState extends State<MyHomePageState> {
                               textStyle: TextStyle(color: Colors.pink),
                               selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 30),
                               value: _currentRunMinValue,
-                              minValue: 1,
+                              minValue: 0,
                               maxValue: 60,
                               onChanged: (value) =>setState(() =>_currentRunMinValue = value),
                             ),

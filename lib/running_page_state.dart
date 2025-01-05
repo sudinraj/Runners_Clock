@@ -83,6 +83,7 @@ class _RunningPageStateState extends State<RunningPageState> {
               setTime = walking;
               remainingTime = walking;
               activity = 'Walk';
+              //resets the Walk stats for the cycle
               currentWalkDistance = 0.0;
               currentWalkTime = 0.0;
             }
@@ -91,6 +92,7 @@ class _RunningPageStateState extends State<RunningPageState> {
               setTime = running;
               remainingTime = running;
               activity = 'Run';
+              //resets the Run stats for the cycle
               currentRunDistance = 0.0;
               currentRunTime = 0.0;
             }
