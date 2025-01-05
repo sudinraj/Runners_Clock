@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
@@ -19,6 +21,7 @@ class _RunningPageStateState extends State<RunningPageState> {
   String activity = 'Run';
   bool done = false;
   bool set = false;
+  bool change = false;
   late int remainingTime;
   late int setTime;
   late int walking;
@@ -75,8 +78,9 @@ class _RunningPageStateState extends State<RunningPageState> {
         player.play(AssetSource('sound.mp3'));
       }
       
-      if (remainingTime <= 0) {
+      if (remainingTime <= 0 || change == true) {
           setState(() {
+            change = false;
             timer.cancel();
             //sets up the walk timer if run timer had ended
             if(activity == "Run"){
@@ -209,6 +213,13 @@ class _RunningPageStateState extends State<RunningPageState> {
                     dispose();
                   },
                   child: Text('Stop'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    //changes the state from run to walk and vice versa
+                    change = true;
+                  },
+                  child: Text('Change'),
                 ),
 
                 //Display speed and distance
