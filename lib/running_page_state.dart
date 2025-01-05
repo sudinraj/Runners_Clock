@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
@@ -43,6 +41,9 @@ class _RunningPageStateState extends State<RunningPageState> {
   String walkSpeed = "0.0";
   StreamSubscription? getPositionSubscription;
 
+  int totalMinute = 0;
+  int totalSecond = 0;
+
 //for getting the stats for the run/walk during the countdown
   double currentRunDistance = 0.0;
   double currentRunTime = 0.0;
@@ -62,7 +63,7 @@ class _RunningPageStateState extends State<RunningPageState> {
   _timer = Timer.periodic(oneSec, (timer){
     if(!done){
   //when the timer is 0, it checks if it was the running timer or the walking timer, then starts the next timer
-      if(remainingTime == 1){
+      if(remainingTime == 2){
       //Keeps the audio from stopping other media playing
       player.setAudioContext(AudioContext(
         android: AudioContextAndroid(
@@ -78,8 +79,12 @@ class _RunningPageStateState extends State<RunningPageState> {
         player.play(AssetSource('sound.mp3'));
       }
       
-      if (remainingTime <= 0 || change == true) {
+      if (remainingTime <= 1 || change == true) {
           setState(() {
+            if(remainingTime<=1){
+              //adds a second to not lose time when changing the timers
+              timerCount();
+            }
             change = false;
             timer.cancel();
             //sets up the walk timer if run timer had ended
@@ -106,14 +111,7 @@ class _RunningPageStateState extends State<RunningPageState> {
           setState(() {
             remainingTime--;
             //keeps track of time
-            if(activity == "Run"){
-              runTime++;
-              currentRunTime++;
-            }
-            else{
-              walkTime++;
-              currentWalkTime++;
-            }
+            timerCount();
           });
         }
     } else{
@@ -121,7 +119,22 @@ class _RunningPageStateState extends State<RunningPageState> {
     }
   });
 }
-
+void timerCount(){
+  if(activity == "Run"){
+      runTime++;
+      currentRunTime++;
+    }
+    else{
+      walkTime++;
+      currentWalkTime++;
+    }
+  //keeps track of total time in minutes and seconds
+  totalSecond++;
+    if(totalSecond >= 60){
+      totalMinute++;
+      totalSecond = 0;
+    }
+  }
 @override
   void dispose() {
     getPositionSubscription?.cancel();
@@ -195,6 +208,21 @@ class _RunningPageStateState extends State<RunningPageState> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    (totalMinute<10) ? Text("0$totalMinute : ",
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,): 
+                        Text("$totalMinute : ",
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+
+                    (totalSecond<10) ? Text("0$totalSecond",
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,): 
+                        Text("$totalSecond",
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                  ]
+                ),
+                
                 Text(activity,
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
                 Text('Seconds:',
@@ -202,26 +230,31 @@ class _RunningPageStateState extends State<RunningPageState> {
                       TimeShow(remainingTime: remainingTime),
                 
                 SizedBox(height: 30,),
-                ElevatedButton(
-                  onPressed: () {
-                    //goes back to the home screen
-                    //Navigator.pop(context);
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        //goes back to the home screen
+                        //Navigator.pop(context);
 
-                    //goes to stats page
-                    Navigator.push(context, CupertinoPageRoute(builder: (context) => Stats(runDistance, runD, walkDistance, walkD, runTime, walkTime, runSpeed, walkSpeed)));
-                    done = true;
-                    dispose();
-                  },
-                  child: Text('Stop'),
+                        //goes to stats page
+                        Navigator.push(context, CupertinoPageRoute(builder: (context) => Stats(runDistance, runD, walkDistance, walkD, runTime, walkTime, runSpeed, walkSpeed, totalMinute, totalSecond)));
+                        done = true;
+                        dispose();
+                      },
+                      child: Text('  Stop  '),
+                    ),
+                    SizedBox(width: 20,),
+                    ElevatedButton(
+                      onPressed: () {
+                        //changes the state from run to walk and vice versa
+                        change = true;
+                      },
+                      child: Text('Change'),
+                    ),
+                  ]
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    //changes the state from run to walk and vice versa
-                    change = true;
-                  },
-                  child: Text('Change'),
-                ),
-
                 //Display speed and distance
                 SizedBox(height: 30,),
                 Container(decoration: BoxDecoration(
@@ -260,7 +293,7 @@ class _RunningPageStateState extends State<RunningPageState> {
                     )
                   )
                 ),
-                SizedBox(height: 30,),
+                SizedBox(height: 10,),
 
                 Container(decoration: BoxDecoration(
                   border: Border.all(

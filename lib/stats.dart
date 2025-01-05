@@ -10,9 +10,12 @@ class Stats extends StatelessWidget{
   final double walkTime;
   final String runSpeed;
   final String walkSpeed;
-  const Stats(this.runDistance, this.runD, this.walkDistance, this.walkD, this.runTime, this.walkTime, this.runSpeed, this.walkSpeed,{super.key});
+  final int totalMinute;
+  final int totalSecond;
+  const Stats(this.runDistance, this.runD, this.walkDistance, this.walkD, this.runTime, this.walkTime, this.runSpeed, this.walkSpeed, this.totalMinute, this.totalSecond, {super.key});
   @override
   Widget build(BuildContext context) {
+    double totalD = double.parse(runD)+double.parse(walkD);
     return Scaffold(
       body: Container(
       //sets the width and height to be the size of the screen
@@ -45,20 +48,40 @@ class Stats extends StatelessWidget{
                       gradient: LinearGradient(
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
-                        colors: [const Color.fromARGB(255, 13, 243, 255),const Color.fromARGB(255, 255, 15, 183)],
+                        colors: [const Color.fromARGB(255, 13, 243, 255),const Color.fromARGB(255, 191, 255, 15)],
                         ),
                       ),
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Run Distance: $runD m \n Run Time: $runTime s \n Run Speed: $runSpeed m/s",
-                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                (totalMinute<10) ? Text("Total Time = 0$totalMinute : ",
+                                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,): 
+                                    Text("Total Time = $totalMinute : ",
+                                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+
+                                (totalSecond<10) ? Text("0$totalSecond",
+                                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,): 
+                                    Text("$totalSecond",
+                                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                              ]
+                            ),
+
+                            Text("Total Distance = $totalD",
+                                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+
+                            SizedBox(height: 30,),
+                            
+                            Text("Total Run Distance: $runD m \n Total Run Time: $runTime s \n Average Run Speed: $runSpeed m/s",
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 7, 7),), textAlign: TextAlign.center,),
 
                             SizedBox(height: 30,),
 
-                            Text("Walk Distance: $walkD m \n Walk Speed: $walkTime s \n Walk Speed: $walkSpeed m/s",
-                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
+                            Text("Total Walk Distance: $walkD m \n Total Walk Speed: $walkTime s \n Average Walk Speed: $walkSpeed m/s",
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 7, 85, 255),), textAlign: TextAlign.center,),
                             
                           ]
                         )
