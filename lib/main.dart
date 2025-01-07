@@ -5,7 +5,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:run/running_page_state.dart';
+import 'package:run/pages/log_page.dart';
+import 'package:run/pages/running_page_state.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -171,7 +172,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       child: MaterialApp(
         title: 'Runners Clock',
         initialRoute: '/',
-        
+        routes: {
+          '/logs':(context) => LogPage()
+        },
+
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 62, 198, 247)),
@@ -223,7 +227,7 @@ class _MyHomePageStateState extends State<MyHomePageState> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('Select how much time to run, and how much time to walk:',
+                Text('Select how much time to run, and walk:',
                 style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 189, 5, 5),), 
                 textAlign: TextAlign.center,
                 ),
@@ -232,119 +236,142 @@ class _MyHomePageStateState extends State<MyHomePageState> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Walk:',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-            //The number Picking Wheel
-                      Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        Text('Run:',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('Min',
-                            style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
-            
-                            NumberPicker(
-                              textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233)),
-                              selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 30),
-                              value: _currentWalkValue,
-                              minValue: 0,
-                              maxValue: 60,
-                              onChanged: (value) =>setState(() =>_currentWalkValue = value),
+                            Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Min',
+                                style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+                
+                                NumberPicker(
+                                  textStyle: TextStyle(color: Colors.pink),
+                                  selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 35,fontWeight: FontWeight.bold,),
+                                  value: _currentRunValue,
+                                  minValue: 0,
+                                  maxValue: 60,
+                                  onChanged: (value) =>setState(() =>_currentRunValue = value),
+                                ),
+                              ],
+                            ),
+                
+                            Column(
+                              children: [
+                                SizedBox(height: 25,),
+                                Text(':',
+                                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                              ],
+                            ),
+                
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                
+                              children: [
+                                Text('Sec',
+                                style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+                
+                                NumberPicker(
+                                  textStyle: TextStyle(color: Colors.pink),
+                                  selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 35,fontWeight: FontWeight.bold,),
+                                  value: _currentRunMinValue,
+                                  minValue: 0,
+                                  maxValue: 60,
+                                  onChanged: (value) =>setState(() =>_currentRunMinValue = value),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-            
-                        Column(
-                          children: [
-                            SizedBox(height: 25,),
-                            Text(':',
-                            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-                          ],
-                        ),
-            
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Sec',
-                            style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
-            
-                            NumberPicker(
-                              textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233)),
-                              selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 30),
-                              value: _currentWalkMinValue,
-                              minValue: 0,
-                              maxValue: 60,
-                              onChanged: (value) =>setState(() =>_currentWalkMinValue = value),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ]
                     ),
-                    ]),
             
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Run:',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-            
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        Text('Walk:',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                //The number Picking Wheel
+                          Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('Min',
-                            style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
-            
-                            NumberPicker(
-                              textStyle: TextStyle(color: Colors.pink),
-                              selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 30),
-                              value: _currentRunValue,
-                              minValue: 0,
-                              maxValue: 60,
-                              onChanged: (value) =>setState(() =>_currentRunValue = value),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Min',
+                                style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+                
+                                NumberPicker(
+                                  textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233)),
+                                  selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 35,fontWeight: FontWeight.bold,),
+                                  value: _currentWalkValue,
+                                  minValue: 0,
+                                  maxValue: 60,
+                                  onChanged: (value) =>setState(() =>_currentWalkValue = value),
+                                ),
+                              ],
+                            ),
+                
+                            Column(
+                              children: [
+                                SizedBox(height: 25,),
+                                Text(':',
+                                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
+                              ],
+                            ),
+                
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Sec',
+                                style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
+                
+                                NumberPicker(
+                                  textStyle: TextStyle(color: const Color.fromARGB(255, 30, 186, 233), ),
+                                  selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 7, 85, 255), fontSize: 35,fontWeight: FontWeight.bold,),
+                                  value: _currentWalkMinValue,
+                                  minValue: 0,
+                                  maxValue: 60,
+                                  onChanged: (value) =>setState(() =>_currentWalkMinValue = value),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-            
-                        Column(
-                          children: [
-                            SizedBox(height: 25,),
-                            Text(':',
-                            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,), textAlign: TextAlign.center,),
-                          ],
-                        ),
-            
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-            
-                          children: [
-                            Text('Sec',
-                            style: TextStyle(fontSize: 20,), textAlign: TextAlign.center,),
-            
-                            NumberPicker(
-                              textStyle: TextStyle(color: Colors.pink),
-                              selectedTextStyle: TextStyle(color: const Color.fromARGB(255, 255, 7, 7), fontSize: 30),
-                              value: _currentRunMinValue,
-                              minValue: 0,
-                              maxValue: 60,
-                              onChanged: (value) =>setState(() =>_currentRunMinValue = value),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ]
                     ),
-                    ]),
                 
                 SizedBox(height: 30,),
                 ElevatedButton(
                   onPressed: () {
-                    
+                    //goes to the page with tht timer
                     Navigator.push(context, CupertinoPageRoute(builder: (context) => RunningPageState((_currentWalkValue*60 + _currentWalkMinValue), (_currentRunValue*60 + _currentRunMinValue))));
                   },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(100, 50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: Color.fromARGB(255, 158, 0, 0),)
+                    )
+                  ),
                   child: Text('Start'),
+                ),
+
+                SizedBox(height: 30,),
+                ElevatedButton(
+                  onPressed: () {
+                    //goes to the page with tht timer
+                    Navigator.push(context, CupertinoPageRoute(builder: (context) => LogPage()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(100, 50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: Color.fromARGB(255, 158, 0, 0),)
+                    )
+                  ),
+                  child: Text('Stats'),
                 ),
               ],
             ),

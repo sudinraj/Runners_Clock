@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+//import 'package:run/database_helper.dart';
+import 'package:run/logging.dart';
 
 
 class Stats extends StatelessWidget{
-  final double runDistance;
-  final String runD;
-  final double walkDistance;
-  final String walkD;
-  final double runTime;
-  final double walkTime;
-  final String runSpeed;
-  final String walkSpeed;
-  final int totalMinute;
-  final int totalSecond;
-  const Stats(this.runDistance, this.runD, this.walkDistance, this.walkD, this.runTime, this.walkTime, this.runSpeed, this.walkSpeed, this.totalMinute, this.totalSecond, {super.key});
+  final logging session;
+  const Stats(this.session, {super.key});
   @override
   Widget build(BuildContext context) {
+    final String runD = session.runD;
+    final String walkD = session.walkD;
+    final double runTime = session.runTime;
+    final double walkTime = session.walkTime;
+    final String runSpeed = session.runSpeed;
+    final String walkSpeed = session.walkSpeed;
+    final int totalMinute = session.totalMinute;
+    final int totalSecond = session.totalSecond;
     double totalD = double.parse(runD)+double.parse(walkD);
     return Scaffold(
       body: Container(
@@ -94,7 +95,7 @@ class Stats extends StatelessWidget{
                       onPressed: () {
                         //goes back to the home screen
                         //Navigator.popUntil(context, ModalRoute.withName("/"));
-                        Navigator.popAndPushNamed(context, "/");
+                        Navigator.popUntil(context, ModalRoute.withName("/"));
                       },
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(100, 50),
@@ -103,6 +104,23 @@ class Stats extends StatelessWidget{
                         )
                       ),
                       child: Text('Home'),
+                    ),
+
+                    SizedBox(height: 20,),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        //goes to the log page screen
+                        //Navigator.popUntil(context, ModalRoute.withName("/"));
+                        Navigator.popAndPushNamed(context, "/logs");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size(100, 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(color: Color.fromARGB(255, 158, 0, 0),)
+                        )
+                      ),
+                      child: Text('All Sessions'),
                     ),
                   ]
                 ),

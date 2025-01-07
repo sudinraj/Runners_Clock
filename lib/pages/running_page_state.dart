@@ -4,7 +4,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:run/_determine_position.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:run/stats.dart';
+import 'package:run/database_helper.dart';
+import 'package:run/logging.dart';
+import 'package:run/pages/stats.dart';
 
 class RunningPageState extends StatefulWidget {
   final int walking ;
@@ -54,6 +56,7 @@ class _RunningPageStateState extends State<RunningPageState> {
   String currentWalkSpeed = "0.0";
   String currentWalkD = "0.0";
 
+  late logging session;
 
   //String location = "Nothing yet";
 
@@ -238,13 +241,14 @@ class _RunningPageStateState extends State<RunningPageState> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        //goes back to the home screen
-                        //Navigator.pop(context);
-
+                        //adds to the database
+                        DateTime now = DateTime.now();
+                        final logging model = logging(id: now.toString(), runD: runD, walkD: walkD, runTime: runTime, walkTime: walkTime, runSpeed: runSpeed, walkSpeed: walkSpeed, totalMinute: totalMinute, totalSecond: totalSecond);
+                        send(model);
+                        
                         //goes to stats page
-                        Navigator.push(context, CupertinoPageRoute(builder: (context) => Stats(runDistance, runD, walkDistance, walkD, runTime, walkTime, runSpeed, walkSpeed, totalMinute, totalSecond)));
+                        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => Stats(model)));
                         done = true;
-                        dispose();
                       },
                       child: Text('  Stop  '),
                     ),
@@ -340,6 +344,13 @@ class _RunningPageStateState extends State<RunningPageState> {
         ),
       ),
     );
+  }
+
+  Future<void> send(logging model) async {
+    //adds the stats to the log
+    await DatabaseHelper.addLog(model);
+    logging get = await (DatabaseHelper.getData(model.id));
+    session = get;
   }
 }
 
