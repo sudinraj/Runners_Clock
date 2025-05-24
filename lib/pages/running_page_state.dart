@@ -174,7 +174,7 @@ class _RunningPageStateState extends State<RunningPageState> {
 
             currentRunDistance += Geolocator.distanceBetween(latitude, longtitude, position.latitude, position.longitude);
             currentRunD = currentRunDistance.toStringAsFixed(2);
-            currentRunSpeed = (runDistance/runTime).toStringAsFixed(2);
+            currentRunSpeed = (currentRunDistance/currentRunTime).toStringAsFixed(2);
           }
           else{
             walkDistance += Geolocator.distanceBetween(latitude, longtitude, position.latitude, position.longitude);
@@ -184,7 +184,7 @@ class _RunningPageStateState extends State<RunningPageState> {
 
             currentWalkDistance += Geolocator.distanceBetween(latitude, longtitude, position.latitude, position.longitude);
             currentWalkD = currentWalkDistance.toStringAsFixed(2);
-            currentWalkSpeed = (walkDistance/walkTime).toStringAsFixed(2);
+            currentWalkSpeed = (currentWalkDistance/currentWalkTime).toStringAsFixed(2);
           }
           latitude = position.latitude;
           longtitude = position.longitude;
